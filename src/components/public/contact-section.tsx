@@ -15,14 +15,6 @@ const initialState: FormState = {
   error: false,
 };
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? 'Sending...' : 'Send Message'}
-    </Button>
-  );
-}
 
 import { Phone, Mail, Instagram, Linkedin, MessageCircle } from 'lucide-react';
 
