@@ -14,6 +14,8 @@ import {
 import PasswordPromptDialog from './password-prompt-dialog';
 import type { ProjectCategory, GalleryCategory } from '@/types';
 
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
+
 export default function DemoDataControls() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,12 +33,12 @@ export default function DemoDataControls() {
       const batch = writeBatch(firestore);
       
       // 1. Set Site Content
-      const siteContentRef = doc(firestore, 'siteContent', 'global');
+      const siteContentRef = doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS);
       batch.set(siteContentRef, DEMO_SITE_CONTENT);
 
       // 2. Create Project Categories and get their IDs
       const projCategoryPromises = DEMO_PROJECT_CATEGORIES.map(category => {
-        const docRef = doc(collection(firestore, 'projectCategories'));
+        const docRef = doc(collection(firestore, COLLECTIONS.PROJECT_CATEGORIES));
         batch.set(docRef, category);
         return { ...category, id: docRef.id };
       });
@@ -52,14 +54,14 @@ export default function DemoDataControls() {
         const { categoryName, ...projectData } = project;
         const projectCategoryId = projCategoryNameIdMap[categoryName];
         if (projectCategoryId) {
-          const docRef = doc(collection(firestore, 'projects'));
+          const docRef = doc(collection(firestore, COLLECTIONS.PROJECTS));
           batch.set(docRef, { ...projectData, projectCategoryId });
         }
       });
 
       // 4. Create Gallery Categories and get their IDs
       const galleryCategoryPromises = DEMO_GALLERY_CATEGORIES.map(category => {
-        const docRef = doc(collection(firestore, 'galleryCategories'));
+        const docRef = doc(collection(firestore, COLLECTIONS.GALLERY_CATEGORIES));
         batch.set(docRef, category);
         return { ...category, id: docRef.id };
       });
@@ -75,7 +77,7 @@ export default function DemoDataControls() {
         const { categoryName, ...imageData } = image;
         const galleryCategoryId = galleryCategoryNameIdMap[categoryName];
         if (galleryCategoryId) {
-          const docRef = doc(collection(firestore, 'galleryImages'));
+          const docRef = doc(collection(firestore, COLLECTIONS.GALLERY_IMAGES));
           batch.set(docRef, { ...imageData, galleryCategoryId });
         }
       });
@@ -97,7 +99,14 @@ export default function DemoDataControls() {
     toast({ title: 'Resetting portfolio...', description: 'This may take a moment.' });
     
     try {
-      const collectionsToClear = ['projects', 'projectCategories', 'galleryImages', 'galleryCategories', 'siteContent', 'contactMessages'];
+      const collectionsToClear = [
+        COLLECTIONS.PROJECTS, 
+        COLLECTIONS.PROJECT_CATEGORIES, 
+        COLLECTIONS.GALLERY_IMAGES, 
+        COLLECTIONS.GALLERY_CATEGORIES, 
+        COLLECTIONS.SITE_CONTENT, 
+        COLLECTIONS.CONTACT_MESSAGES
+      ];
       const batch = writeBatch(firestore);
 
       for (const coll of collectionsToClear) {
