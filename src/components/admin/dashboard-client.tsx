@@ -12,15 +12,17 @@ import { format, subDays, startOfDay } from 'date-fns';
 import { Badge } from '../ui/badge';
 import { Briefcase, Mail, MailOpen } from 'lucide-react';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 export default function DashboardClient() {
   const firestore = useFirestore();
 
   const projectsQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'projects')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.PROJECTS)) : null
   , [firestore]);
 
   const messagesQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'contactMessages'), orderBy('timestamp', 'desc')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.CONTACT_MESSAGES), orderBy('timestamp', 'desc')) : null
   , [firestore]);
 
   const { data: projects, isLoading: projectsLoading } = useCollection<Project>(projectsQuery);

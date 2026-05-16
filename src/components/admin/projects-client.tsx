@@ -28,6 +28,8 @@ import { Skeleton } from '../ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 export default function ProjectsClient() {
   const router = useRouter();
   const { toast } = useToast();
@@ -35,12 +37,12 @@ export default function ProjectsClient() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'projects'), orderBy('order', 'asc'));
+    return query(collection(firestore, COLLECTIONS.PROJECTS), orderBy('order', 'asc'));
   }, [firestore]);
 
   const categoriesQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'projectCategories'));
+    return query(collection(firestore, COLLECTIONS.PROJECT_CATEGORIES));
   }, [firestore]);
   
   const { data: projects, loading: projectsLoading } = useCollection<Project>(projectsQuery);
@@ -56,7 +58,7 @@ export default function ProjectsClient() {
 
   const handleDelete = (id: string) => {
       if (!firestore || !window.confirm("Are you sure you want to delete this project?")) return;
-      const projectRef = doc(firestore, "projects", id);
+      const projectRef = doc(firestore, COLLECTIONS.PROJECTS, id);
       deleteDoc(projectRef)
         .then(() => {
             toast({ title: "Project deleted successfully." });

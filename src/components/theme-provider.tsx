@@ -13,11 +13,13 @@ interface ThemeProviderProps {
 
 const ThemeProviderContext = createContext<{ theme: Theme, setTheme: (theme: Theme) => void } | undefined>(undefined);
 
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>('dark'); // Default to dark
   const firestore = useFirestore();
   
-  const siteContentRef = useMemo(() => firestore ? doc(firestore, 'siteContent', 'global') : null, [firestore]);
+  const siteContentRef = useMemo(() => firestore ? doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS) : null, [firestore]);
   const { data: siteContent, loading } = useDoc<SiteContent & { theme?: Theme }>(siteContentRef);
 
   useEffect(() => {

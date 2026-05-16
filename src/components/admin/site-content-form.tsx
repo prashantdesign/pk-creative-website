@@ -71,6 +71,8 @@ const formSchema = z.object({
 });
 
 
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
+
 export default function SiteContentForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +81,7 @@ export default function SiteContentForm() {
 
   const firestore = useFirestore();
 
-  const siteContentRef = useMemo(() => firestore ? doc(firestore, 'siteContent', 'global') : null, [firestore]);
+  const siteContentRef = useMemo(() => firestore ? doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS) : null, [firestore]);
   const { data: siteContent, loading: isFetching } = useDoc<SiteContent>(siteContentRef as any);
 
   const form = useForm<z.infer<typeof formSchema>>({

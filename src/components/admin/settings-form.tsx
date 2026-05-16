@@ -27,12 +27,14 @@ const formSchema = z.object({
   isPortfolioSectionVisible: z.boolean().default(true),
 });
 
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
+
 export default function SettingsForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const firestore = useFirestore();
 
-  const siteContentRef = useMemo(() => firestore ? doc(firestore, 'siteContent', 'global') : null, [firestore]);
+  const siteContentRef = useMemo(() => firestore ? doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS) : null, [firestore]);
   const { data: siteContent, loading: isFetching } = useDoc<SiteContent>(siteContentRef as any);
 
   const form = useForm<z.infer<typeof formSchema>>({

@@ -30,10 +30,12 @@ const formSchema = z.object({
 
 type GalleryFormValues = z.infer<typeof formSchema>;
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 function saveGalleryImage(firestore: any, imageId: string | undefined, data: any) {
   const imageData = { ...data, updatedAt: serverTimestamp() };
   if (imageId) {
-    const imageRef = doc(firestore, 'galleryImages', imageId);
+    const imageRef = doc(firestore, COLLECTIONS.GALLERY_IMAGES, imageId);
     setDoc(imageRef, imageData, { merge: true }).catch(async (serverError: any) => {
         const permissionError = new FirestorePermissionError({
           path: imageRef.path,
@@ -43,7 +45,7 @@ function saveGalleryImage(firestore: any, imageId: string | undefined, data: any
         errorEmitter.emit('permission-error', permissionError);
       });
   } else {
-    const collRef = collection(firestore, 'galleryImages');
+    const collRef = collection(firestore, COLLECTIONS.GALLERY_IMAGES);
     const finalData = { ...imageData, createdAt: serverTimestamp() };
     addDoc(collRef, finalData).catch(async (serverError: any) => {
         const permissionError = new FirestorePermissionError({
@@ -65,7 +67,7 @@ export default function GalleryForm({ image }: { image?: GalleryImage }) {
 
   const categoriesQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'galleryCategories'), orderBy('name'));
+    return query(collection(firestore, COLLECTIONS.GALLERY_CATEGORIES), orderBy('name'));
   }, [firestore]);
   const { data: categories, isLoading: categoriesLoading } = useCollection<GalleryCategory>(categoriesQuery);
 

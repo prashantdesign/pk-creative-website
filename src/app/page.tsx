@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { Project, SiteContent } from '@/types';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
 
 import Header from '@/components/public/header';
 import HeroSection from '@/components/public/hero-section';
@@ -16,7 +17,10 @@ import ProjectModal from '@/components/public/project-modal';
 import StatsSection from '@/components/public/stats-section';
 import GallerySection from '@/components/public/gallery-section';
 import SkillsSection from '@/components/public/skills-section';
-import ToolsSection from '@/components/public/tools-section';
+import ServicesSection from '@/components/public/services-section';
+import ProcessSection from '@/components/public/process-section';
+import TestimonialsSection from '@/components/public/testimonials-section';
+import PackagesSection from '@/components/public/packages-section';
 
 export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -24,7 +28,7 @@ export default function Home() {
   const router = useRouter();
   const firestore = useFirestore();
 
-  const siteContentRef = useMemoFirebase(() => firestore ? doc(firestore, 'siteContent', 'global') : null, [firestore]);
+  const siteContentRef = useMemoFirebase(() => firestore ? doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS) : null, [firestore]);
   const { data: siteContent, loading } = useDoc<SiteContent>(siteContentRef);
 
   useEffect(() => {
@@ -54,32 +58,33 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-primary"></div>
+      <div className="flex h-screen w-full items-center justify-center bg-black">
+        <div className="w-16 h-16 border-4 border-[#7B2EFF] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (siteContent?.isMaintenanceModeEnabled) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center text-center p-4">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Under Maintenance</h1>
-          <p className="text-muted-foreground">My portfolio is currently undergoing some updates. Please check back soon!</p>
+      <div className="flex flex-col min-h-screen items-center justify-center text-center p-4 bg-black text-white">
+          <h1 className="text-5xl font-extrabold tracking-tight mb-4">Under Maintenance</h1>
+          <p className="text-gray-400 text-lg">PK Creative is currently undergoing some updates. Please check back soon!</p>
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col min-h-screen bg-background ${siteContent?.areAnimationsEnabled ? '' : 'no-animations'}`}>
-      <Header siteName={siteContent?.siteName} />
+    <div className={`flex flex-col min-h-screen bg-[#111111] ${siteContent?.areAnimationsEnabled ? '' : 'no-animations'}`}>
+      <Header siteName={siteContent?.siteName || 'PK Creative'} />
       <main className="flex-grow">
         <HeroSection content={siteContent} />
-        {(siteContent?.isAboutSectionVisible ?? true) && <AboutSection content={siteContent} />}
-        {(siteContent?.isStatsSectionVisible ?? true) && <StatsSection content={siteContent} />}
-        {(siteContent?.isSkillsSectionVisible ?? true) && <SkillsSection content={siteContent} />}
-        {(siteContent?.isToolsSectionVisible ?? true) && <ToolsSection content={siteContent} />}
-        {(siteContent?.isGallerySectionVisible ?? true) && <GallerySection content={siteContent} />}
-        {(siteContent?.isPortfolioSectionVisible ?? true) && <PortfolioSection content={siteContent} onProjectClick={handleProjectClick} />}
+        <ServicesSection />
+        <AboutSection content={siteContent} />
+        <StatsSection content={siteContent} />
+        <ProcessSection />
+        <PackagesSection />
+        <PortfolioSection content={siteContent} onProjectClick={handleProjectClick} />
+        <TestimonialsSection />
         <ContactSection />
       </main>
       <Footer content={siteContent} />

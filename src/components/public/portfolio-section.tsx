@@ -5,6 +5,7 @@ import type { SiteContent, Project, ProjectCategory } from '@/types';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
+import { COLLECTIONS } from '@/lib/db-schema';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
@@ -19,11 +20,11 @@ export default function PortfolioSection({ content, onProjectClick }: PortfolioS
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const projectsQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'projects'), orderBy('order', 'asc')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.PROJECTS), orderBy('order', 'asc')) : null
   , [firestore]);
 
   const categoriesQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'projectCategories'), orderBy('order', 'asc')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.PROJECT_CATEGORIES), orderBy('order', 'asc')) : null
   , [firestore]);
 
   const { data: projects, isLoading: projectsLoading } = useCollection<Project>(projectsQuery);

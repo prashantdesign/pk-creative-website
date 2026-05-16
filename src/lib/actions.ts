@@ -5,6 +5,10 @@ import { z } from 'zod';
 const contactSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
   email: z.string().email({ message: 'A valid email is required.' }),
+  businessName: z.string().optional(),
+  phone: z.string().optional(),
+  serviceNeeded: z.string().optional(),
+  budget: z.string().optional(),
   message: z.string().min(1, { message: 'Message is required.' }),
 });
 
@@ -20,6 +24,10 @@ export async function submitContactForm(
   const parsed = contactSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
+    businessName: formData.get('businessName'),
+    phone: formData.get('phone'),
+    serviceNeeded: formData.get('serviceNeeded'),
+    budget: formData.get('budget'),
     message: formData.get('message'),
   });
 
@@ -30,11 +38,11 @@ export async function submitContactForm(
     };
   }
 
-  const { name, email, message } = parsed.data;
+  const { name, email, message, businessName, phone, serviceNeeded, budget } = parsed.data;
 
   // Use the Firestore REST API to avoid server-side SDK initialization issues.
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const collectionId = 'contactMessages';
+  const collectionId = 'pkc_contactMessages';
   
   if (!projectId) {
      const errorMessage = 'Firebase Project ID is not configured on the server.';
@@ -52,6 +60,10 @@ export async function submitContactForm(
     fields: {
       name: { stringValue: name },
       email: { stringValue: email },
+      businessName: { stringValue: businessName || '' },
+      phone: { stringValue: phone || '' },
+      serviceNeeded: { stringValue: serviceNeeded || '' },
+      budget: { stringValue: budget || '' },
       message: { stringValue: message },
       isRead: { booleanValue: false },
       timestamp: { timestampValue: now },
@@ -74,7 +86,7 @@ export async function submitContactForm(
         return { message: `A server error occurred: ${errorMessage}`, error: true };
     }
     
-    return { message: 'Thank you for your message! I will get back to you soon.' };
+    return { message: 'Thank you for your message! We will get back to you soon.' };
 
   } catch (error) {
     console.error('Error submitting contact form via REST API:', error);

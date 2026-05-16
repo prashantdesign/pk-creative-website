@@ -28,20 +28,22 @@ import { Skeleton } from '../ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 export default function MessagesClient() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
   const messagesQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'contactMessages'), orderBy('timestamp', 'desc'));
+    return query(collection(firestore, COLLECTIONS.CONTACT_MESSAGES), orderBy('timestamp', 'desc'));
   }, [firestore]);
 
   const { data: messages, isLoading: loading } = useCollection<ContactMessage>(messagesQuery);
   
   const toggleReadStatus = (id: string, currentStatus: boolean) => {
     if (!firestore) return;
-    const messageRef = doc(firestore, "contactMessages", id);
+    const messageRef = doc(firestore, COLLECTIONS.CONTACT_MESSAGES, id);
     updateDoc(messageRef, { isRead: !currentStatus })
       .then(() => {
         toast({ title: `Message marked as ${!currentStatus ? 'read' : 'unread'}.` });
@@ -59,7 +61,7 @@ export default function MessagesClient() {
 
   const handleDelete = (id: string) => {
       if (!firestore || !window.confirm("Are you sure you want to delete this message?")) return;
-      const messageRef = doc(firestore, "contactMessages", id);
+      const messageRef = doc(firestore, COLLECTIONS.CONTACT_MESSAGES, id);
       deleteDoc(messageRef)
         .then(() => {
             toast({ title: "Message deleted successfully." });

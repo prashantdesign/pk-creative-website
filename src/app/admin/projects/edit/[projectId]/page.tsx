@@ -7,12 +7,14 @@ import type { Project } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 export default function EditProjectPage({ params }: { params: { projectId: string } }) {
   const firestore = useFirestore();
   
   const projectRef = useMemo(() => {
     if (!firestore) return null;
-    return doc(firestore, 'projects', params.projectId);
+    return doc(firestore, COLLECTIONS.PROJECTS, params.projectId);
   }, [firestore, params.projectId]);
 
   const { data: project, loading } = useDoc<Project>(projectRef);

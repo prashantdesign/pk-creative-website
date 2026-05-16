@@ -40,10 +40,12 @@ const formSchema = z.object({
 
 type ProjectFormValues = z.infer<typeof formSchema>;
 
+import { COLLECTIONS, DOCS } from '@/lib/db-schema';
+
 function saveProject(firestore: any, projectId: string | undefined, data: any) {
   const projectData = { ...data, updatedAt: serverTimestamp() };
   if (projectId) {
-    const projectRef = doc(firestore, 'projects', projectId);
+    const projectRef = doc(firestore, COLLECTIONS.PROJECTS, projectId);
     setDoc(projectRef, projectData, { merge: true }).catch(async (serverError: any) => {
         const permissionError = new FirestorePermissionError({
           path: projectRef.path,
@@ -53,7 +55,7 @@ function saveProject(firestore: any, projectId: string | undefined, data: any) {
         errorEmitter.emit('permission-error', permissionError);
       });
   } else {
-    const collRef = collection(firestore, 'projects');
+    const collRef = collection(firestore, COLLECTIONS.PROJECTS);
     const finalData = { ...projectData, createdAt: serverTimestamp() };
     addDoc(collRef, finalData).catch(async (serverError: any) => {
         const permissionError = new FirestorePermissionError({
@@ -74,12 +76,12 @@ export default function ProjectForm({ project }: { project?: Project }) {
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   
-  const siteContentRef = useMemo(() => firestore ? doc(firestore, 'siteContent', 'global') : null, [firestore]);
+  const siteContentRef = useMemo(() => firestore ? doc(firestore, COLLECTIONS.SITE_CONTENT, DOCS.SITE_SETTINGS) : null, [firestore]);
   const { data: siteContent } = useDoc<SiteContent>(siteContentRef);
 
   const categoriesQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'projectCategories'), orderBy('name'));
+    return query(collection(firestore, COLLECTIONS.PROJECT_CATEGORIES), orderBy('name'));
   }, [firestore]);
   const { data: categories, isLoading: categoriesLoading } = useCollection<ProjectCategory>(categoriesQuery);
 

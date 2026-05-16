@@ -1,16 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase';
 import { FirebaseErrorListener } from '@/components/firebase-error-listener';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({ 
+  subsets: ['latin'], 
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-poppins' 
+});
 
 export const metadata: Metadata = {
-  title: 'PK Design Studio',
-  description: 'A professional portfolio for a creative Graphic, UI, and Brand Designer.',
+  title: 'PK Creative – Complete Website Development',
+  description: 'Creative branding, websites, and digital experiences designed to help businesses stand out online.',
 };
 
 export default function RootLayout({
@@ -20,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-body antialiased`}>
+      <body className={`${poppins.variable} font-sans antialiased`}>
         <FirebaseClientProvider>
           <ThemeProvider>
             {children}

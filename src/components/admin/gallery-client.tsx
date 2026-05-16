@@ -29,6 +29,8 @@ import { Skeleton } from '../ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 export default function GalleryClient() {
   const router = useRouter();
   const { toast } = useToast();
@@ -36,14 +38,14 @@ export default function GalleryClient() {
 
   const galleryQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'galleryImages'), orderBy('order', 'asc'));
+    return query(collection(firestore, COLLECTIONS.GALLERY_IMAGES), orderBy('order', 'asc'));
   }, [firestore]);
 
   const { data: images, loading } = useCollection<GalleryImage>(galleryQuery);
 
   const handleDelete = (id: string) => {
       if (!firestore || !window.confirm("Are you sure you want to delete this image?")) return;
-      const imageRef = doc(firestore, "galleryImages", id);
+      const imageRef = doc(firestore, COLLECTIONS.GALLERY_IMAGES, id);
       deleteDoc(imageRef)
         .then(() => {
             toast({ title: "Image deleted successfully." });

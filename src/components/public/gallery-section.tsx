@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
 
+import { COLLECTIONS } from '@/lib/db-schema';
+
 interface GallerySectionProps {
   content: SiteContent | null;
 }
@@ -18,11 +20,11 @@ export default function GallerySection({ content }: GallerySectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const imagesQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'galleryImages'), orderBy('order', 'asc')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.GALLERY_IMAGES), orderBy('order', 'asc')) : null
   , [firestore]);
 
   const categoriesQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'galleryCategories'), orderBy('order', 'asc')) : null
+    firestore ? query(collection(firestore, COLLECTIONS.GALLERY_CATEGORIES), orderBy('order', 'asc')) : null
   , [firestore]);
 
   const { data: images, isLoading: imagesLoading } = useCollection<GalleryImage>(imagesQuery);
